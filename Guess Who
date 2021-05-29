@@ -1,0 +1,355 @@
+"""
+Simulates the 'Guess Who?' game in the console. 
+Player answers yes/no questions until the computer 'guesses' the answer'. 
+Eliminated characters get grayscaled until the last character is left.
+Game can be played 3 times.
+"""
+
+from simpleimage import SimpleImage
+
+#These are constants of the characteristcs
+ORI_POOL = ['Muhammad', 'Ellie', 'Henry', 'Rubia', 'Max', 'Samuel', 'Mason', 'Archie', 'Fred', 'Julia', 'Shannon', 'Ayan']
+FEMALES = ['Ellie', 'Rubia', 'Julia', 'Shannon', 'Ayan']
+BEARD = ['Muhammad', 'Max']
+BLUE_EYES = ['Henry', 'Archie']
+BROWN_JACKET = ['Muhammad']
+GLASSES = ['Henry']
+BROWN_HAIR = ['Samuel', 'Mason']
+HAT = ['Samuel']
+RED_TOP = ['Julia', 'Ayan']
+EARRINGS = ['Julia']
+BROWN_EYES = ['Rubia']
+BOW = ['Ellie']
+
+def main():
+    opening()
+    game()
+    closing()
+
+#Prints an opening to the game
+def opening():
+    print("We are going to play 'Guess Who?'")
+    print("Choose a person and answer the following questions or hit Enter to see the picture again.")
+
+#Asks player to hit enter to start game and see characters
+#Computer asks a series of yes/no questions and works out the answer with a series of if/else loops
+#Player can hit Enter after a question to see the image of the characters again
+#Eliminated characters appear grayscaled
+#Player can play 3 times
+def game():
+    e = 0
+    while e < 3:
+        answer = input("Hit Enter if you are ready to play.")
+        if answer == "":
+            image = SimpleImage('Guess Who.png')
+            image.show()
+        while answer not in [""]:
+            answer = input("Hit Enter if you are ready to play.")
+            if answer == "":
+                image = SimpleImage('Guess Who.png')
+                image.show()
+        print("Answer the questions with 'yes' or 'no':")
+        answer = input('Is the person male? ').lower()
+        while answer not in ['yes', 'no']:
+            answer = input("Please answer with 'yes' or 'no'. Is the person male? ").lower()
+        if answer == 'yes':
+            poolM = NotIn(ORI_POOL, FEMALES)
+            answer = input('Has he got a beard? ').lower()
+            imageNoF = grayscale_5char(image,0, 200, 200, 400, 0, 200, 600, 791, 400, 594, 200, 400, 400, 594, 400, 591, 400, 594, 591, 791)
+            if answer == "":
+                imageNoF.show()
+            while answer not in ['yes', 'no']:
+                answer = input("Please answer with 'yes' or 'no'. Has he got a beard? ").lower()
+            if answer == 'yes':
+                imageBeard = grayscale_5char(imageNoF,400, 594, 0, 200, 200, 400, 200, 400, 200, 400, 400, 600, 0, 200, 400, 591, 200, 400, 591, 791)
+                poolBeard = In(poolM, BEARD)
+                answer = input('Is he wearing a brown jacket? ').lower()
+                if answer == "":
+                    imageBeard.show()
+                while answer not in ['yes', 'no']:
+                    answer = input("Please answer with 'yes' or 'no'. Is he wearing a brown jacket? ").lower()
+                if answer == 'yes':
+                    imageBrJacket = grayscale_1char(imageBeard,200, 400, 0, 200)
+                    imageBrJacket.show()
+                    pool_BrJacket = In(poolBeard, BROWN_JACKET)
+                    guess = pool_BrJacket[0]
+                    print("It's " + guess + "!")
+                if answer == 'no':
+                    imageNoBrJacket = grayscale_1char(imageBeard,0, 200, 0, 200)
+                    imageNoBrJacket.show()
+                    pool_No_BrJacket = NotIn(poolBeard, BROWN_JACKET)
+                    guess = pool_No_BrJacket[0]
+                    print("It's " + guess + "!")
+            elif answer == 'no':
+                imageNoBeard = grayscale_2char(imageNoF,0, 200, 0, 200, 200, 400, 0, 200)
+                pool_No_Beards = NotIn(poolM, BEARD)
+                answer = input('Has he got blue eyes? ').lower()
+                if answer == "":
+                    imageNoBeard.show()
+                while answer not in ['yes', 'no']:
+                    answer = input("Please answer with 'yes' or 'no'. Has he got blue eyes? ").lower()
+                if answer == 'yes':
+                    imageBlEyes = grayscale_3char(imageNoBeard,400, 594, 0, 200, 200, 400, 200, 400, 200, 400, 400, 600)
+                    pool_BlEyes = In(pool_No_Beards, BLUE_EYES)
+                    answer = input('Is he wearing glasses? ').lower()
+                    if answer == "":
+                        imageBlEyes.show()
+                    while answer not in ['yes', 'no']:
+                        answer = input("Please answer with 'yes' or 'no'. Is he wearing glasses? ").lower()
+                    if answer == 'yes':
+                        imageGlasses = grayscale_1char(imageBlEyes,200, 400, 600, 791)
+                        imageGlasses.show()
+                        pool_Glasses = In(pool_BlEyes, GLASSES)
+                        guess = pool_Glasses[0]
+                        print("It's " + guess + "!")
+                    if answer == 'no':
+                        imageNoGlasses = grayscale_1char(imageBlEyes,0, 200, 400, 600)
+                        imageNoGlasses.show()
+                        pool_No_Glasses = NotIn(pool_BlEyes, GLASSES)
+                        guess = pool_No_Glasses[0]
+                        print("It's " + guess + "!")
+                elif answer == 'no':
+                    imageNoBlEyes = grayscale_2char(imageNoBeard,0, 200, 400, 600, 200, 400, 600, 791)
+                    pool_No_BlEyes = NotIn(pool_No_Beards, BLUE_EYES)
+                    answer = input('Has he got brown hair? ').lower()
+                    if answer == "":
+                        imageNoBlEyes.show()
+                    while answer not in ['yes', 'no']:
+                        answer = input("Please answer with 'yes' or 'no'. Has he got brown hair? ").lower()
+                    if answer == 'no':
+                        imageNoBrHair = grayscale_2char(imageNoBlEyes,200, 400, 200, 400, 200, 400, 400, 600)
+                        pool_No_BrHair = NotIn(pool_No_BlEyes, BROWN_HAIR)
+                        guess = pool_No_BrHair[0]
+                        print("It's " + guess + "!")
+                    if answer == 'yes':
+                        imageBrHair = grayscale_1char(imageNoBlEyes,400, 594, 0, 200)
+                        pool_BrHair = In(pool_No_BlEyes, BROWN_HAIR)
+                        answer = input('Is he wearing a hat? ').lower()
+                        if answer == "":
+                            imageBrHair.show()
+                        while answer not in ['yes', 'no']:
+                            answer = input("Please answer with 'yes' or 'no'. Is he wearing a hat? ").lower()
+                        if answer == 'yes':
+                            imageHat = grayscale_1char(imageNoBlEyes,200, 400, 400, 600)
+                            imageHat.show()
+                            pool_Hat = In(pool_BrHair, HAT)
+                            guess = pool_Hat[0]
+                            print("It's " + guess + "!")
+                        if answer == 'no':
+                            imageNoHat = grayscale_1char(imageNoBlEyes,200, 400, 200, 400)
+                            imageNoHat.show()
+                            pool_No_Hat = NotIn(pool_BrHair, HAT)
+                            guess = pool_No_Hat[0]
+                            print("It's " + guess + "!")
+        elif answer == 'no':
+            imageNoM = grayscale_7char(image, 0, 200, 0, 200, 200, 400, 0, 200, 400, 594, 0, 200, 200, 400, 200, 400, 0, 200, 400, 600, 200, 400, 400, 600, 200, 400, 600, 791)
+            poolF = In(ORI_POOL, FEMALES)
+            answer = input("Is she wearing a red top? ").lower()
+            if answer == "":
+                imageNoM.show()
+            while answer not in ['yes', 'no']:
+                answer = input("Please answer with 'yes' or 'no'. Is she wearing a red top? ").lower()
+            if answer == 'yes':
+                imageRedTop = grayscale_3char(imageNoM, 0, 200, 200, 400, 0, 200, 500, 791, 400, 594, 400, 600)
+                pool_Red_Top = In(poolF, RED_TOP)
+                answer = input("Is she wearing earrings? ").lower()
+                if answer == "":
+                    imageRedTop.show()
+                while answer not in ['yes', 'no']:
+                    answer = input("Please answer with 'yes' or 'no'. Is she wearing earrings? ").lower()
+                if answer == 'yes':
+                    imageEarrings = grayscale_1char(imageRedTop, 400, 594, 600, 791)
+                    imageEarrings.show()
+                    pool_Earrings = In(pool_Red_Top, EARRINGS)
+                    guess = pool_Earrings[0]
+                    print("It's " + guess + "!")
+                elif answer == 'no':
+                    imageNoEarrings = grayscale_1char(imageRedTop, 400, 594, 200, 400)
+                    imageNoEarrings.show()
+                    pool_No_Earrings = NotIn(pool_Red_Top, EARRINGS)
+                    guess = pool_No_Earrings[0]
+                    print("It's " + guess + "!")
+            elif answer == 'no':
+                imageNoRedTop = grayscale_2char(imageNoM, 400, 594, 200, 400, 400, 594, 600, 791)
+                pool_No_Red_Top = NotIn(poolF, RED_TOP)
+                answer = input("Has she got brown eyes? ").lower()
+                if answer == "":
+                    imageNoRedTop.show()
+                while answer not in ['yes', 'no']:
+                    answer = input("Please answer with 'yes' or 'no'. Has she got brown eyes? ").lower()
+                if answer == 'yes':
+                    imageBrEyes = grayscale_2char(imageNoRedTop, 0, 200, 400, 400, 400, 594, 400, 600)
+                    imageBrEyes.show()
+                    pool_BrEyes = In(pool_No_Red_Top, BROWN_EYES)
+                    guess = pool_BrEyes[0]
+                    print("It's " + guess + "!")
+                elif answer == 'no':
+                    imageNoBrEyes = grayscale_1char(imageNoRedTop, 0, 200, 600, 791)
+                    pool_No_BrEyes = NotIn(pool_No_Red_Top, BROWN_EYES)
+                    answer = input("Has she got a bow? ").lower()
+                    if answer == "":
+                        imageNoBrEyes.show()
+                    while answer not in ['yes', 'no']:
+                        answer = input("Please answer with 'yes' or 'no'. Has she got a bow? ").lower()
+                    if answer == 'yes':
+                        imageBow = grayscale_1char(imageNoBrEyes, 400, 594, 400, 600)
+                        imageBow.show()
+                        pool_Bow = In(pool_No_BrEyes, BOW)
+                        guess = pool_Bow[0]
+                        print("It's " + guess + "!")
+                    elif answer == 'no':
+                        imageNoBow = grayscale_1char(imageNoBrEyes, 0, 200, 200, 400)
+                        imageNoBow.show()
+                        pool_NoBow = NotIn(pool_No_BrEyes, BOW)
+                        guess = pool_NoBow[0]
+                        print("It's " + guess + "!")
+        e += 1
+
+#Closing line printed after the game is played 3 times
+def closing():
+    print("Thanks for playing!")
+
+#Function creates a new list by appending characters from the old list which match those in the constant list
+#Function takes in the parametes of the old list and the constant characteristic e.g. BEARD
+def NotIn(lst, char):
+    pool = []
+    for elem in lst:
+        if elem not in char:
+            pool.append(elem)
+    return(pool)
+
+#Function creates a new list by appending characters from the old list which don't match those in the constant list
+#Function takes in the parametes of the old list and the constant characteristic e.g. BEARD
+def In(lst, char):
+    pool = []
+    for elem in lst:
+        if elem in char:
+            pool.append(elem)
+    return(pool)
+
+#Function grayscales pixels in an image
+def grayscale_pixel(pixel):
+    avg = (pixel.red + pixel.green + pixel.blue) // 3
+    pixel.red = avg
+    pixel.green = avg
+    pixel.blue = avg
+    return pixel
+
+# Function grayscales 1 part of an image by getting the parameters for start and end x and y coordinates
+def grayscale_1char(im, a, b, c, d):
+    image = im
+    for y in range(a, b):
+        for x in range(c, d):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    return image
+
+# Function grayscales 2 parts of an image by getting the parameters for start and end x and y coordinates for each part
+def grayscale_2char(im, a, b, c, d, e, f, g, h):
+    image = im
+    for y in range(a, b):
+        for x in range(c, d):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(e, f):
+        for x in range(g, h):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    return image
+
+# Function grayscales 3 parts of an image by getting the parameters for start and end x and y coordinates for each part
+def grayscale_3char(im, a, aa, b, bb, c, cc, d, dd, e, ee, f, ff):
+    image = im
+    for y in range(a, aa):
+        for x in range(b, bb):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(c, cc):
+        for x in range(d, dd):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(e, ee):
+        for x in range(f, ff):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    return image
+
+# Function grayscales 5 parts of an image by getting the parameters for start and end x and y coordinates for each part
+def grayscale_5char(im, a, aa, b, bb, c, cc, d, dd, e, ee, f, ff, g, gg, h, hh, i, ii, j, jj):
+    image = im
+    for y in range(a, aa):
+        for x in range(b, bb):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(c, cc):
+        for x in range(d, dd):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(e, ee):
+        for x in range(f, ff):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(g, gg):
+        for x in range(h, hh):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(i, ii):
+        for x in range(j, jj):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    return image
+
+# Function grayscales 7 parts of an image by getting the parameters for start and end x and y coordinates for each part
+def grayscale_7char(im, a, aa, b, bb, c, cc, d, dd, e, ee, f, ff, g, gg, h, hh, i, ii, j, jj, k, kk, l, ll, m, mm, n, nn):
+    image = im
+    for y in range(a, aa):
+        for x in range(b, bb):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(c, cc):
+        for x in range(d, dd):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(e, ee):
+        for x in range(f, ff):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(g, gg):
+        for x in range(h, hh):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(i, ii):
+        for x in range(j, jj):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(k, kk):
+        for x in range(l, ll):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    for y in range(m, mm):
+        for x in range(n, nn):
+            pixel = image.get_pixel(x, y)
+            grayscaled_pixel = grayscale_pixel(pixel)
+            image.set_pixel(x, y, grayscaled_pixel)
+    return image
+
+
+if __name__ == '__main__':
+    main()
